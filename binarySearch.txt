@@ -1,0 +1,47 @@
+// C program to implement iterative Binary Search
+#include <stdio.h>
+
+int binarySearch(int arr[], int l, int r, int x)
+{
+    while (l <= r)
+    {
+        int m = l + (r - l) / 2;
+
+        if (arr[m] == x)
+            return m;
+        if (arr[m] < x)
+            l = m + 1;
+        // return binarySearch(arr, mid+1, r, x);;
+        else
+            r = m - 1;
+        // return binarySearch(arr, l, mid-1, x);
+    }
+
+    return -1;
+}
+
+int main(void)
+{
+    int n, i;
+    printf("Enter the no of elements: ");
+    scanf("%d", &n);
+    int arr[n];
+    printf("Enter the elements of array: \n");
+    for (i = 0; i < n; i++)
+    {
+        scanf("%d", &arr[i]);
+    }
+    int find;
+    printf("Enter the element to search in the array: ");
+    scanf("%d", &find);
+    int ans = binarySearch(arr, 0, n - 1, find);
+    if (ans == -1)
+    {
+        printf("Element is not found in the array");
+    }
+    else
+    {
+        printf("Element is found at index %d", ans);
+    }
+    return 0;
+}

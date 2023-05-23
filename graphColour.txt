@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_VERTICES 100
+bool isSafe(int vertex, int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int colors[MAX_VERTICES], int color)
+{
+    for (int i = 0; i < vertices; i++)
+    {
+        if (graph[vertex][i] && colors[i] == color)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool graphColoringUtil(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int colors[MAX_VERTICES], int numColors, int vertex)
+{
+    if (vertex == vertices)
+        return true;
+
+    for (int color = 1; color <= numColors; color++)
+    {
+        if (isSafe(vertex, graph, vertices, colors, color))
+        {
+            colors[vertex] = color;
+            if (graphColoringUtil(graph, vertices, colors, numColors, vertex + 1))
+                return true;
+            colors[vertex] = 0;
+        }
+    }
+
+    return false;
+}
+
+void graphColoring(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int numColors)
+{
+    int colors[MAX_VERTICES] = {0};
+
+    if (graphColoringUtil(graph, vertices, colors, numColors, 0))
+    {
+        printf("Graph coloring is possible with %d colors.\n", numColors);
+        printf("Vertex\tColor\n");
+        for (int i = 0; i < vertices; i++)
+        {
+            printf("%d\t%d\n", i, colors[i]);
+        }
+    }
+    else
+    {
+        printf("Graph coloring is not possible with %d colors.\n", numColors);
+    }
+}
+
+int main()
+{
+    int vertices, numEdges, numColors;
+
+    printf("Enter the number of vertices in the graph: ");
+    scanf("%d", &vertices);
+
+    printf("Enter the number of edges in the graph: ");
+    scanf("%d", &numEdges);
+
+    printf("Enter the edges (start_vertex end_vertex):\n");
+    int graph[MAX_VERTICES][MAX_VERTICES] = {{0}};
+    for (int i = 0; i < numEdges; i++)
+    {
+        int start, end;
+        scanf("%d %d", &start, &end);
+        graph[start][end] = 1;
+        graph[end][start] = 1;
+    }
+
+    printf("Enter the number of colors available: ");
+    scanf("%d", &numColors);
+
+    graphColoring(graph, vertices, numColors);
+
+    return 0;
+}
+
+
+
+
+
+
+5
+6
+0 1
+0 2
+1 2
+1 3
+2 3
+3 4
+3
+0	1
+1	2
+2	3
+3	1
+4	2

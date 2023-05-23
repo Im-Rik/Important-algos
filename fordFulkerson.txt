@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#define MAX_VERTICES 100
+int min(int a, int b)
+{
+    return (a < b) ? a : b;
+}
+bool bfs(int graph[MAX_VERTICES][MAX_VERTICES], int numVertices, int source, int sink, int parent[])
+{
+    bool visited[MAX_VERTICES] = {false};
+    int queue[MAX_VERTICES];
+    int front = 0, rear = 0;
+    queue[rear++] = source;
+    visited[source] = true;
+    parent[source] = -1;
+
+    while (front < rear)
+    {
+        int u = queue[front++];
+
+        for (int v = 0; v < numVertices; v++)
+        {
+            if (!visited[v] && graph[u][v] > 0)
+            {
+                queue[rear++] = v;
+                visited[v] = true;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return visited[sink];
+}
+
+int fordFulkerson(int graph[MAX_VERTICES][MAX_VERTICES], int numVertices, int source, int sink)
+{
+    int residualGraph[MAX_VERTICES][MAX_VERTICES];
+    int u, v;
+
+    for (u = 0; u < numVertices; u++)
+    {
+        for (v = 0; v < numVertices; v++)
+        {
+            residualGraph[u][v] = graph[u][v];
+        }
+    }
+
+    int parent[MAX_VERTICES];
+    int maxFlow = 0;
+    while (bfs(residualGraph, numVertices, source, sink, parent))
+    {
+        int pathFlow = INT_MAX;
+
+        for (v = sink; v != source; v = parent[v])
+        {
+            u = parent[v];
+            pathFlow = min(pathFlow, residualGraph[u][v]);
+        }
+
+        for (v = sink; v != source; v = parent[v])
+        {
+            u = parent[v];
+            residualGraph[u][v] -= pathFlow;
+            residualGraph[v][u] += pathFlow;
+        }
+        maxFlow += pathFlow;
+    }
+
+    return maxFlow;
+}
+
+int main()
+{
+    int numVertices, numEdges, source, sink;
+    int graph[MAX_VERTICES][MAX_VERTICES] = {{0}};
+
+    printf("Enter the number of vertices in the graph: ");
+    scanf("%d", &numVertices);
+
+    printf("Enter the number of edges in the graph: ");
+    scanf("%d", &numEdges);
+
+    printf("Enter the details of the edges (start_vertex end_vertex capacity):\n");
+    for (int i = 0; i < numEdges; i++)
+    {
+        int u, v, capacity;
+        scanf("%d %d %d", &u, &v, &capacity);
+        graph[u][v] = capacity;
+    }
+
+    printf("Enter the source vertex: ");
+    scanf("%d", &source);
+
+    printf("Enter the sink vertex: ");
+    scanf("%d", &sink);
+
+    int maxFlow = fordFulkerson(graph, numVertices, source, sink);
+    printf("The maximum flow in the graph is: %d\n", maxFlow);
+
+    return 0;
+}
+
+
+
+
+
+4
+5
+0 1 3
+0 2 2
+1 2 2
+1 3 3
+2 3 3
+0
+3
+ 5/4
